@@ -78,11 +78,13 @@ $ pwd
 # 不想要 git 管理跟踪的文件,可以在仓库根目录添加 .gitignore 文件,在里面写对应的规则
 $ git init              把当前目录初始化为 git 仓库
 $ ls -ah                查看当前目录下的文件,包含隐藏文件 (不带 -ah 看不了隐藏文件)
+$ ll -la				以详细信息的形式查看当前目录下的所有文件
 ```
 
 ###### 2. 添加文件到仓库
 ```
-$ git add <file>              	  如: git add readme.txt
+$ git add/stage <file>          	如: git add readme.txt
+$ git add .	  将当前目录下的所有未跟踪文件添加到版本库暂存区
 $ git commit -m "description"     如: git commit -m "add readme.txt"
 
 # 添加文件到仓库分两步:
@@ -109,6 +111,7 @@ $ git diff 命令：
 ###### 5. 查看提交日志
 ```
 $ git log
+$ git log --stat  查看commit历史，以及每次commit发生变更的文件列表
 $ git log --oneline     #美化输出信息,每个记录显示为一行,显示 commit_id 前几位数
 $ git log --pretty=oneline     #美化输出信息,每个记录显示为一行,显示完整的 commit_id
 $ git log --graph --pretty=format:'%h -%d %s (%cr)' --abbrev-commit --
@@ -230,7 +233,7 @@ $ git remote add gitee git@gitee.com:dalecheung/learngit.git
 $ git push github master
 $ git push gitee master
 ```
-> # *加上了-u参数，Git 不但会把本地的 master 分支内容推送到远程新的 master 分支，还会把本地的 master 分支和远程的master分支关联起来*
+> # *加上了-u参数，Git 不但会把本地的 master 分支内容推送到远程新的 master 分支，还会把本地的 master 分支和远程的master分支关联起来
 
 ###### 5. 从远程仓库克隆 (先有远程库)
 ```
@@ -246,7 +249,7 @@ $ git branch -a    列出所有本地分支和远程分支
 $ git branch dev   创建 dev 分支
 $ git switch dev   切换到 dev 分支  (git checkout dev)
 $ git switch -c dev   创建并切换到新的 dev 分支  (git checkout -b dev)
-$ git switch -c dev origin/dev  创建远程 origin 的 dev 分支到本地并切换到该分支
+$ git switch -c dev origin/dev  创建远程 origin 的 dev 分支到本地并切换到该分支,同时建立关联
 $ git branch -d dev   删除 dev 分支
 $ git branch -D dev   强制删除 dev 分支
 $ git push origin :<branch>
@@ -256,8 +259,14 @@ $ git merge dev       合并 dev 分支到当前分支 (当有冲突的时候,�
 $ git merge --no-ff -m "merge with no-ff" dev  合并 dev 分支到当前分支(禁用Fast forward 合并策略)
 
 $ git pull  拉取远程分支最新的内容
+
+$ git fetch 取回远程仓库的变化，但并不会主动与本地分支合并。这个比git pull 更安全
+	git fetch origin master  从远程的origin仓库的　master　分支下载代码到本地的　origin master
+	git log -p master.. origin/master  比较本地的仓库和远程仓库的区别
+	git merge origin/master  把远程下载下来的代码合并到本地仓库，远程的和本地的合并
+
 $ git branch --set-upstream-to=origin/dev dev;
-$ git branch -u origin/dev dev  指定本地 dev 分支与远程 origin/dev 分支的链接
+$ git branch -u origin/dev dev  指定本地 dev 分支与远程 origin/dev 分支的关联
 
 
 # 为本次合并要创建一个新的commit，所以加上-m参数，把commit描述写进去
@@ -294,15 +303,15 @@ $ git tag  查看所有的标签
 $ git tag <tagname>  打标签(默认标签是打在最新提交的commit上) 如: git tag v1.0
 $ git tag <tagname> <commit_id>  给对应的 commit_id 打标签
 $ git tag -a <tagname> -m "标签说明信息" <commit_id> 创建带有说明的标签，用-a指定标签名，-m指定说明文字
-$ git tag -d <tagname> 删除一个本地标签
-$ git tag -D <tagname> 强行删除一个本地标签
-$ git push origin :refs/tags/<tagname>;
-$ git push origin --delete <tagname> 删除一个远程标签
 $ git show <tagname>  查看标签信息
 
 $ git push origin <tagname>  推送一个本地标签到远程
 $ git push origin --tags     一次性推送全部尚未推送到远程的本地标签
 
+$ git tag -d <tagname> 删除一个本地标签
+$ git tag -D <tagname> 强行删除一个本地标签
+$ git push origin :refs/tags/<tagname>;
+$ git push origin --delete <tagname> 删除一个远程标签
 # 删除远程标签,需要先删除本地标签,然后在删除远程标签,如:删除标签 v0.9
 $ git tag -d v0.9
 $ git push origin :refs/tags/v0.9
