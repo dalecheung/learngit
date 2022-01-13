@@ -34,6 +34,7 @@ $ git config user.email     查看邮箱地址
 ### 查看用户的全局配置信息：
 $ git config --global --list
 $ cat ~/.gitconfig
+$ vim ~/.gitconfig 直接配置信息
 
 ### 查看当前仓库的配置信息：
 $ git config --local --list
@@ -78,7 +79,7 @@ $ pwd
 # 不想要 git 管理跟踪的文件,可以在仓库根目录添加 .gitignore 文件,在里面写对应的规则
 $ git init              把当前目录初始化为 git 仓库
 $ ls -ah                查看当前目录下的文件,包含隐藏文件 (不带 -ah 看不了隐藏文件)
-$ ll -la				以详细信息的形式查看当前目录下的所有文件
+$ ll -la			   以详细信息的形式查看当前目录下的所有文件
 ```
 
 ###### 2. 添加文件到仓库
@@ -127,6 +128,7 @@ $ git log --graph --pretty=oneline --abbrev-commit
 ```
 $ git reset --hard HEAD^
 $ git reset --hard <commit_id>
+$ git push -f	强制回退远程库版本
 
 # HEAD    表示当前版本，也就是最新的提交
 # HEAD^   上一个版本
@@ -144,12 +146,14 @@ $ git reflog
 
 ###### 8. 撤销修改
 ######- 丢弃工作区 (Working Directory) 的修改
+
 ```
 $ git restore <file>  (建议使用) (如: git restore readme.txt)
 $ git checkout -- <file>
 # 命令中 -- 很重要，没有就变成 “切换到另一个分支” 的命令
 ```
 ######- 丢弃暂存区 (stage/index) 的修改
+
 ```
 # 第一步: 把暂存区的修改撤销掉(unstage)，重新放回工作区
 $ git restore --staged <file>
@@ -160,6 +164,7 @@ $ git restore <file>
 ```
 
 ######- 小结
+
 >- 当你改乱了工作区某个文件的内容，想直接丢弃工作区的修改时，用命令`git restore <file>`。
 >- 当你不但改乱了工作区某个文件的内容，还添加到了暂存区时，想丢弃修改，分两步，第一步用命令`git restore --staged <file>`，就回到了场景1，第二步按场景1操作。
 >- 已经提交了不合适的修改到版本库时，想要撤销本次提交，参考 *版本回退* 一节，不过前提是没有推送到远程库。
@@ -219,9 +224,10 @@ $ git remote add origin git@github.com:dalecheung/learngit.git
 $ git remote       查看远程库信息
 $ git remote -v    查看远程库详细信息
 $ git remote rm origin  删除已关联的远程库 origin
-$ git push -u origin master    #第一次推送*
+$ git push -u origin master    #第一次推送 *
 $ git push origin master      推送本地 master 分支到远程库
 $ git push origin dev         推送本地 dev 分支到远程库
+$ git push -f 				  强制推送
 #  除了第一次推送,不需要添加 -u 参数
 
 # 一个本地库关联多个远程库,例如同时关联 GitHub 和 Gitee:
@@ -233,7 +239,7 @@ $ git remote add gitee git@gitee.com:dalecheung/learngit.git
 $ git push github master
 $ git push gitee master
 ```
-> # *加上了-u参数，Git 不但会把本地的 master 分支内容推送到远程新的 master 分支，还会把本地的 master 分支和远程的master分支关联起来
+> ##### **\*加上了 -u 参数，Git 不但会把本地的 master 分支内容推送到远程新的 master 分支，还会把本地的 master 分支和远程的master分支关联起来**
 
 ###### 5. 从远程仓库克隆 (先有远程库)
 ```
@@ -257,20 +263,20 @@ $ git push origin --delete <branch> 删除远程分支
 $ git branch -m [oldName] [newName] 重命名分支
 $ git merge dev       合并 dev 分支到当前分支 (当有冲突的时候,需要先解决冲突)
 $ git merge --no-ff -m "merge with no-ff" dev  合并 dev 分支到当前分支(禁用Fast forward 合并策略)
+# 为本次合并要创建一个新的commit，所以加上-m参数，把commit描述写进去
+# 合并分支时，加上 --no-ff 参数就可以用普通模式合并，合并后的历史有分支，能看出来曾经做过合并，而 Fast forward 合并就看不出来曾经做过合并
 
 $ git pull  拉取远程分支最新的内容
 
 $ git fetch 取回远程仓库的变化，但并不会主动与本地分支合并。这个比git pull 更安全
 	git fetch origin master  从远程的origin仓库的　master　分支下载代码到本地的　origin master
-	git log -p master.. origin/master  比较本地的仓库和远程仓库的区别
+	#git log -p master.. origin/master  比较本地的仓库和远程仓库的区别
 	git merge origin/master  把远程下载下来的代码合并到本地仓库，远程的和本地的合并
+
+*pull = fetch + merge
 
 $ git branch --set-upstream-to=origin/dev dev;
 $ git branch -u origin/dev dev  指定本地 dev 分支与远程 origin/dev 分支的关联
-
-
-# 为本次合并要创建一个新的commit，所以加上-m参数，把commit描述写进去
-# 合并分支时，加上 --no-ff 参数就可以用普通模式合并，合并后的历史有分支，能看出来曾经做过合并，而 Fast forward 合并就看不出来曾经做过合并
 
 $ git log --graph  查看分支合并图
 $ git log --graph --pretty=oneline --abbrev-commit
@@ -288,13 +294,12 @@ $ git cherry-pick <commit> 复制一个特定的提交到当前分支(当前分�
 $ git rebase  把本地未push的分叉提交历史整理成直线(使得我们在查看历史提交的变化时更容易，因为分叉的提交需要三方对比)
 ```
 
-'''
-### 远程库分支重命名后(main -> master)，如有本地库，则执行以下操作：
-git branch -m main master
-git fetch origin(远程库名)
-git branch -u origin/master master
-git remote set-head origin -a
-'''
+**远程库分支重命名后(main -> master)，如有本地库，则执行以下操作：**
+
+> - git branch -m main master
+>- git fetch origin(远程库名)
+>- git branch -u origin/master master
+>- git remote set-head origin -a
 
 #####  七、标签
 ```
